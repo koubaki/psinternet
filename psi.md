@@ -29,20 +29,26 @@ A PSI packet is structured as follows:
 |       Unsigned Extension Header Length (2 bytes)              |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
-|                         Signature (64 bytes)                  |
+|                         Signature (73 bytes)                  |
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
-|                         Signature (continued)                 |
+|                     Signature (continued)                     |
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
-|                         Signature (continued)                 |
+|                     Signature (continued)                     |
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
-|                         Signature (continued)                 |
+|                     Signature (continued)                     |
 |                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                     Signature (continued)                     |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Sig (last byte) |                Padding (3 bytes)           |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 | Version (1B)  |                 Nonce (16 bytes)              |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -122,7 +128,7 @@ Note: There is no padding as shown in the diagram above; it is only meant to mat
 
 - **Unsigned Extension Header Length**: 2 bytes. Length of the unsigned extension headers in bytes.
 
-- **Signature**: 64 bytes. ECDSA signature using the secp256k1 curve.
+- **Signature**: 73 bytes. ECDSA signature using the secp256k1 curve.
 
 - **Version**: 1 byte. Values: 128-255. Current version is 1 (the byte being 128). First bit is reserved for IP versions and is be set to 1 in PSI.
 
