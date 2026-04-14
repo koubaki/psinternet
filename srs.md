@@ -10,8 +10,10 @@ It aims to replace ICMP (Internet Control Message Protocol) usage in PSI.
 
 - **SRS Code**: A 1-byte numeric code indicating the type of response.
 
-## Codes
+## Successful Response
 
-- 0: Packet received.
+0 indicates a successful response, meaning that the packet was successfully delivered to the destination and processed without any issues.
 
-- 1:
+## Registration
+
+A registry of SRS codes may be established in the future, but for now, only 0 is defined to indicate a successful response.

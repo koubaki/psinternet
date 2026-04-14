@@ -34,7 +34,7 @@ A NIE packet is structured as follows:
 
 - **Version**: The version of the NIE packet format.
 
-- **Nonce**: A unique value used to prevent replay attacks.
+- **Nonce**: A unique value used to prevent unintended replay of packets.
 
 - **Expiration Date**: The date and time after which the packet is considered invalid.
 
@@ -48,6 +48,8 @@ A NIE packet is structured as follows:
 
 - **Announcement Packet**: Used to announce the presence of a path to nodes.
 
+- **Blank Packet**: A blank packet with no payload, used for purposes that the lower layers may define.
+
 ## Authentication
 
 The authentication field consists of:
@@ -56,7 +58,7 @@ The authentication field consists of:
 
 - **Public Key**: 33-byte compressed PSI public key of the signer.
 
-- **Reserved**: 512 bytes reserved for lower layers to use as needed (e.g., for verifying IP addresses or signing the router's password).
+- **Reserved**: 256 bytes reserved for lower layers to use as needed.
 
 ## Packet Payloads
 
@@ -64,7 +66,7 @@ The authentication field consists of:
 
 #### Request
 
-- **Path Length**: The 3-byte length of the path from the source to the node that is sending the packet.
+- **Path Length**: The 2-byte length of the path from the source to the node that is sending the packet.
 
 - **Path**: A path from the source to the node that is sending the packet.
 
@@ -72,7 +74,7 @@ The authentication field consists of:
 
 #### Response
 
-- **Path Length**: The 3-byte length of the path from the destination back to the source.
+- **Path Length**: The 2-byte length of the path from the destination back to the source.
 
 - **Path**: A path from the destination back to the source.
 
@@ -80,11 +82,11 @@ The authentication field consists of:
 
 #### Request
 
-- **LNS Name**: The LNS name to be resolved.
+- **LNS Name**: The LNS (Local Name System) name to be resolved.
 
 #### Response
 
-- **PSI Public Key**: The PSI public key corresponding to the resolved LNS name.
+- **PSI Public Key**: The PSI public key corresponding to the resolved LNS name. Must be null (all zero bytes) if the resolution failed.
 
 ### Announcement Packet
 
@@ -92,31 +94,52 @@ The authentication field consists of:
 
 - **Is Deannouncement**: A boolean indicating whether this is a deannouncement.
 
-- **Path Length**: The 3-byte number of paths being announced.
+- **How Many Paths**: The 2-byte number of paths being announced.
 
 - **Paths**: The paths being announced to other nodes.
 
-- **Exclusion Length**: The 3-byte number of nodes to exclude from announcing the paths to.
-
-- **Exclusion List**: A list of nodes to exclude from announcing the paths to, including proofs that they have received the paths.
-
 #### Response
 
-- **Confirmation**: A list of proofs confirming receipt of each path.
+*None*
 
 ## Structures
 
 ### Data Request Packet Path
 
-The path is an array of the following structure:
+The path is an array of the following structure, the first node being the source and the last node being the next node in the path:
 
 - **Signature**: 73-byte ECDSA signature of the rest of the structure.
 
 - **Public Key**: 33-byte compressed public key of the signer.
 
-- **Nonce**: The nonce used in the PSI packet being transported.
+- **Hash**: The hash of the PSI packet being transported.
 
-- **Next Node**: The next node in the path.
+- **Previous Node**: The previous node in the path. Must be null (all zero bytes) for the first node in the path.
+
+- **Next Node**: The next node in the path. Must be null (all zero bytes) for the last node in the path.
 
 ### Data Response Packet Path
 
+The path is an array of the following structure, the first node being the destination and the last node being the previous node in the request's path:
+
+- **Signature**: 73-byte ECDSA signature of the rest of the structure.
+
+- **Public Key**: 33-byte compressed public key of the signer.
+
+- **Hash**: The hash of the PSI packet being transported.
+
+- **SRS**: The SRS (Service Response System) code indicating the type of response.
+
+- **Previous Node**: The previous node in the path back to the source. Must be null (all zero bytes) for the first node in the path.
+
+- **Next Node**: The next node in the path back to the source. Must be null (all zero bytes) for the last node in the path.
+
+### Announcement Packet Path
+
+The path is an array of the following structure, the first node being the source and the last node being the next node in the path:
+
+- **Signature**: 73-byte ECDSA signature of the rest of the structure.
+
+- **Public Key**: 33-byte compressed public key of the signer.
+
+- **Next Node**: The next node in the path. If it is the last node in the path, it must be the node the path is being announced to.
